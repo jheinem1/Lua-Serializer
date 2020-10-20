@@ -5,8 +5,8 @@
     File: serializer.lua
     Creation Date: 10-20-2020
     Description: Adapted from another project, this module provides an API to convert Lua
-                 values back into code for debuggin purposes. Works with every value except
-                 userdata and functions (will simply assign placeholder values)
+                 values back into code for debugging purposes. Works with every value except
+                 userdata and functions (will simply assign placeholder values).
 ]]
 
 --- number of spaces to indent code
