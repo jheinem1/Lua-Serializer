@@ -40,7 +40,6 @@ end
 function v2v(t)
     topstr = ""
     bottomstr = ""
-    getnilrequired = false
     local ret = ""
     local count = 1
     for i, v in pairs(t) do
@@ -52,9 +51,6 @@ function v2v(t)
             ret = ret .. "local " .. type(v) .. "_" .. tostring(count) .. " = " .. v2s(v, nil, nil, type(v) .. "_" .. tostring(count), true) .. "\n"
         end
         count = count + 1
-    end
-    if getnilrequired then
-        topstr = "function getNil(name,class) for _,v in pairs(getnilinstances())do if v.ClassName==class and v.Name==name then return v;end end end\n" .. topstr
     end
     if #topstr > 0 then
         ret = topstr .. "\n" .. ret
@@ -98,9 +94,6 @@ function t2s(t, l, p, n, vtv, i, pt, path, tables)
     l = l + indent
     for k, v in pairs(t) do
         size = size + 1
-        if size > (_G.SimpleSpyMaxTableSize and _G.SimpleSpyMaxTableSize or 1000) then
-            break
-        end
         local currentPath = ""
         if type(k) == "string" and k:match("^[%a_]+[%w_]*$") then
             currentPath = "." .. k
