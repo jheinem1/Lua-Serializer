@@ -1,7 +1,7 @@
 --[[
     Lua Serializer (Value-To-Code)
     Author: James Heinemann
-    Version: 0.2
+    Version: 0.1
     File: serializer.lua
     Creation Date: 10-20-2020
     Description: Adapted from another project, this module provides an API to convert Lua
@@ -203,6 +203,7 @@ function handlespecials(s)
                 i = i + 1
             elseif char == "\\" then
                 s = s:sub(0, i - 1) .. "\\" .. s:sub(i + 1, -1)
+                i = i + 1
             elseif char == '"' then
                 s = s:sub(0, i - 1) .. '\\"' .. s:sub(i + 1, -1)
                 i = i + 1
