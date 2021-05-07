@@ -97,15 +97,15 @@ function t2s(t, l, p, n, vtv, i, pt, path, tables)
         if rawequal(k, t) then -- checks if the table being iterated over is being used as an index within itself (yay, lua)
             bottomstr = bottomstr .. "\n" .. tostring(n) .. tostring(path) .. "[" .. tostring(n) .. tostring(path) .. "]" .. " = " .. (rawequal(v, k) and tostring(n) .. tostring(path) or v2s(v, l, p, n, vtv, k, t, path .. "[" .. tostring(n) .. tostring(path) .. "]", tables))
             size = size - 1
-            continue
-        end
-        local currentPath = ""
-        if type(k) == "string" and k:match("^[%a_]+[%w_]*$") then
-            currentPath = "." .. k
         else
-            currentPath = "[" .. v2s(k, nil, p, n, vtv, i, pt, path) .. "]"
+            local currentPath = ""
+            if type(k) == "string" and k:match("^[%a_]+[%w_]*$") then
+                currentPath = "." .. k
+            else
+                currentPath = "[" .. v2s(k, nil, p, n, vtv, i, pt, path) .. "]"
+            end
+            s = s .. "\n" .. string.rep(" ", l) .. "[" .. v2s(k, l, p, n, vtv, k, t, path .. currentPath, tables) .. "] = " .. v2s(v, l, p, n, vtv, k, t, path .. currentPath, tables) .. ","
         end
-        s = s .. "\n" .. string.rep(" ", l) .. "[" .. v2s(k, l, p, n, vtv, k, t, path .. currentPath, tables) .. "] = " .. v2s(v, l, p, n, vtv, k, t, path .. currentPath, tables) .. ","
     end
     if #s > 1 then
         s = s:sub(1, #s - 1)
