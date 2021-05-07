@@ -1,7 +1,7 @@
 --[[
     Lua Serializer (Value-To-Code)
     Author: James Heinemann
-    Version: 0.1
+    Version: 0.2
     File: serializer.lua
     Creation Date: 10-20-2020
     Description: Adapted from another project, this module provides an API to convert Lua
@@ -94,6 +94,11 @@ function t2s(t, l, p, n, vtv, i, pt, path, tables)
     l = l + indent
     for k, v in pairs(t) do
         size = size + 1
+        if rawequal(k, t) then -- checks if the table being iterated over is being used as an index within itself (yay, lua)
+            bottomstr = bottomstr .. "\n" .. tostring(n) .. tostring(path) .. "[" .. tostring(n) .. tostring(path) .. "]" .. " = " .. (rawequal(v, k) and tostring(n) .. tostring(path) or v2s(v, l, p, n, vtv, k, t, path .. "[" .. tostring(n) .. tostring(path) .. "]", tables))
+            size = size - 1
+            continue
+        end
         local currentPath = ""
         if type(k) == "string" and k:match("^[%a_]+[%w_]*$") then
             currentPath = "." .. k
