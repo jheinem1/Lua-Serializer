@@ -12,6 +12,8 @@
 --- number of spaces to indent code
 local indent = 4
 local settings = {}
+local topstr = ""
+local bottomstr = ""
 
 --- value-to-string: value, string (out), level (indentation), parent table, var name, is from tovar
 function v2s(v, l, p, n, vtv, i, pt, path, tables)
@@ -152,8 +154,7 @@ function v2p(x, t, path, prev)
             end
             if not duplicate then
                 table.insert(prev, t)
-                local found
-                found, p = v2p(x, v, path, prev)
+                local found, p = v2p(x, v, path, prev)
                 if found then
                     if type(i) == "string" and i:match("^[%a_]+[%w_]*$") then
                         return true, "." .. i .. p
@@ -187,31 +188,34 @@ function formatstr(s)
 end
 
 --- Adds \'s to the text as a replacement to whitespace chars and other things because string.format can't yayeet
-function handlespecials(s)
-    local i = 0
-    repeat
-        i = i + 1
-        local char = s:sub(i, i)
-        if string.byte(char) then
-            if char == "\n" then
-                s = s:sub(0, i - 1) .. "\\n" .. s:sub(i + 1, -1)
-                i = i + 1
-            elseif char == "\t" then
-                s = s:sub(0, i - 1) .. "\\t" .. s:sub(i + 1, -1)
-                i = i + 1
-            elseif char == "\\" then
-                s = s:sub(0, i - 1) .. "\\" .. s:sub(i + 1, -1)
-                i = i + 1
-            elseif char == '"' then
-                s = s:sub(0, i - 1) .. '\\"' .. s:sub(i + 1, -1)
-                i = i + 1
-            elseif not settings.NoFormatUnknowns and (string.byte(char) > 126 or string.byte(char) < 32) then
-                s = s:sub(0, i - 1) .. "\\" .. string.byte(char) .. s:sub(i + 1, -1)
-                i = i + #tostring(string.byte(char))
-            end
+function handlespecials(value, indentation)
+    local buildStr = {}
+    local i = 1
+    local char = string.sub(value, i, i)
+    local indentStr
+    while char ~= "" do
+        if char == '"' then
+            buildStr[i] = '\\"'
+        elseif char == "\\" then
+            buildStr[i] = "\\\\"
+        elseif char == "\n" then
+            buildStr[i] = "\\n"
+        elseif char == "\t" then
+            buildStr[i] = "\\t"
+        elseif string.byte(char) > 126 or string.byte(char) < 32 then
+            buildStr[i] = string.format("\\%d", string.byte(char))
+        else
+            buildStr[i] = char
         end
-    until char == ""
-    return s
+        i = i + 1
+        char = string.sub(value, i, i)
+        if i % 200 == 0 then
+            indentStr = indentStr or string.rep(" ", indentation + indent)
+            table.move({'"\n', indentStr, '... "'}, 1, 3, i, buildStr)
+            i += 3
+        end
+    end
+    return table.concat(buildStr)
 end
 
 -- returns a namespace to interact with the above functions
