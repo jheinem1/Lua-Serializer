@@ -212,7 +212,7 @@ function handlespecials(value, indentation)
         if i % 200 == 0 then
             indentStr = indentStr or string.rep(" ", indentation + indent)
             table.move({'"\n', indentStr, '... "'}, 1, 3, i, buildStr)
-            i += 3
+            i = i + 3
         end
     end
     return table.concat(buildStr)
